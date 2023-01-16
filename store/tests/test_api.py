@@ -3,9 +3,8 @@ Test Model
 """
 
 from django.test import TestCase
-from store.models import Product, Option
 
-# 
+
 class OrderAPITests(TestCase):
 
     # 옵션이 지정되지 않으면 주문서 생성이 불가합니다.
