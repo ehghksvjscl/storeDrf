@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # APP
     'user',
+    'store',
 
     # Third Party
     'rest_framework',
