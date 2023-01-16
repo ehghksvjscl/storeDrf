@@ -24,4 +24,4 @@
 | `chore   `    | 빌드 업무 수정, 패키지 매니저 수정(ex .gitignore 수정 같은 경우)    |
 
 ## ERD
-![store_DRF](https://user-images.githubusercontent.com/22442843/212633160-a9642eab-61c3-4894-88d2-21471e3c38ec.png)
+![store_DRF](https://user-images.githubusercontent.com/22442843/212677638-e7004543-1556-4531-bcb8-193eed626b12.png)
