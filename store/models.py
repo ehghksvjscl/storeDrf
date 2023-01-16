@@ -40,7 +40,7 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="orders")
     option = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="orders")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
-    shipping = models.BooleanField(default=False, verbose_name="배송비")
+    shipping_price = models.PositiveBigIntegerField(default=3000, verbose_name="배송비")
     total_price = models.PositiveBigIntegerField(default=0, verbose_name="총가격")
     is_cart = models.BooleanField(default=False, verbose_name="장바구니 여부")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="주문일")
