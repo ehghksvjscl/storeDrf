@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # APP
+    'users',
+
     # Third Party
     'rest_framework',
 ]
@@ -53,6 +56,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'store.urls'
+
+AUTH_USER_MODEL = 'users.User'
 
 TEMPLATES = [
     {
