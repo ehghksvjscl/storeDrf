@@ -3,17 +3,53 @@ Test Model
 """
 
 from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.core.management import call_command
+
+from rest_framework.test import APIClient
+from rest_framework import status
+
+from store.models import Product
+
+ORDER_URL = reverse('store:order-list')
+
+def create_user(**parms):
+    """Create and reutnr a user"""
+    return get_user_model().objects.create_user(**parms)
 
 
 class OrderAPITests(TestCase):
 
+    def setUp(self):
+        self.client = APIClient()
+
     # 옵션이 지정되지 않으면 주문서 생성이 불가합니다.
     def test_not_create_without_option(self):
-        pass
+        self.user = create_user(email='user@example.com', password='userpassword123')
+        self.client.force_authenticate(self.user)
+
+        payload = {
+            "options": []
+        }
+        res = self.client.post(ORDER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     # 비회원들은 주문서를 생성할 수 없습니다.
     def test_not_create_order_without_login(self):
-        pass
+        payload = {
+            "options": [
+                {
+                    "product": 1,
+                    "name": "기본",
+                    "quantity": 1
+                }
+            ]
+        }
+        res = self.client.post(ORDER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # 유저가 주문하는 금액의 합계가 20,000원이 넘으면 배송비가 0원으로 변경됩니다.
     def test_shipping_fee_is_zero_when_total_price_is_over_20000(self):

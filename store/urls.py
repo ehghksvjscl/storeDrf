@@ -10,7 +10,7 @@ from store.views.order import OrderViewSet
 router = DefaultRouter()
 router.register('order', OrderViewSet)
 
-app_name = 'order'
+app_name = 'store'
 
 urlpatterns= [
     path('', include(router.urls))
