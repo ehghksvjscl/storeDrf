@@ -1,7 +1,6 @@
 """
 Database Store models
 """
-# built-in
 
 from django.db import models
 
