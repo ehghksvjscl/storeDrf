@@ -11,10 +11,6 @@ class OrderAPITests(TestCase):
     def test_not_create_without_option(self):
         pass
 
-    # 비회원들은 상품 정보를 조회할 수 있지만
-    def test_anonymous_user_can_search_order(self):
-        pass
-
     # 비회원들은 주문서를 생성할 수 없습니다.
     def test_not_create_order_without_login(self):
         pass
@@ -29,6 +25,12 @@ class OrderAPITests(TestCase):
 
     # 주문 내역에는 상품, 옵션, 구매 수량, 옵션별 총 주문 가격 정보들과  배송비가 표시되어야 합니다.
     def test_order_has_product_option_quantity_and_price_and_shipping_fee(self):
+        pass
+
+class ProductAPITests(TestCase):
+    
+    # 비회원들은 상품 정보를 조회할 수 있습니다.
+    def test_anonymous_user_can_search_order(self):
         pass
 
 class OptionAPITests(TestCase):
