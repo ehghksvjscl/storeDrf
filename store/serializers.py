@@ -4,13 +4,23 @@ Order Serializer
 
 from rest_framework import serializers
 from store.models import Order, Purchase, Option
-
+from store.queries.order import extend_order, get_option
 class OptionSerializer(serializers.ModelSerializer):
     """Serializer for Option"""
 
     class Meta:
         model = Option
         fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class OrderOptionSerializer(serializers.ModelSerializer):
+    """Serializer for OrderOption"""
+    quantity = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = Option
+        fields = ('id', 'name', 'product', 'quantity')
         read_only_fields = ('id', 'created_at')
 
 class PurchaseSerializer(serializers.ModelSerializer):
@@ -22,6 +32,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
         model = Purchase
         fields = ('id', 'order', 'product', 'quantity', 'options', 'created_at')
 
+
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order"""
 
@@ -32,18 +43,35 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'purchases', 'quantity', 'shipping_fee', 'shipping_address', 'total_price', 'is_cart', 'created_at', 'updated_at')
         read_only_fields = ('id', 'user', 'created_at')
 
+
 class OrderCreateSerializer(serializers.ModelSerializer):
     """Serializer for Order"""
 
-    options = serializers.ListField()
+    options = serializers.ListField(write_only=True)
 
-    def validate_options(self, value):
+    def validate(self, data):
         """Validate options"""
-        if len(value) == 0:
-            raise serializers.ValidationError('Options are required')
-        return value
+
+        options = data.get('options')
+        if len(options) == 0:
+            raise serializers.ValidationError('Options is required')
+
+        for option in options:
+            if get_option(option['product'], option['name']) is None:
+                raise serializers.ValidationError(f"Option {option['name']} is not available")
+
+        return data
+
+    def create(self, validated_data):
+        """Create order"""
+        user = self.context['request'].user
+        options = validated_data.pop('options')
+        order = Order.objects.create(user=user)
+        order = extend_order(order, user, options)
+
+        return order
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'quantity', 'shipping_fee', 'shipping_address', 'total_price', 'is_cart', 'created_at', 'updated_at', 'options')
-        read_only_fields = ('id', 'user', 'created_at')
+        fields = ('id', 'user', 'quantity', 'shipping_fee', 'shipping_address', 'total_price', 'is_cart', 'created_at', 'options')
+        read_only_fields = ('id', 'user', 'created_at', 'total_price', 'is_cart', 'quantity', 'shipping_fee', 'shipping_address')
