@@ -60,13 +60,13 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             if get_option(option['product'], option['name']) is None:
                 raise serializers.ValidationError(f"Option {option['name']} is not available")
 
-            if hasattr(option, 'quantity') is False:
+            if option.get('quantity') is None:
                 raise serializers.ValidationError(f"Quantity is required")
 
-            if hasattr(option, 'name') is False:
+            if option.get('name') is None:
                 raise serializers.ValidationError(f"Name is required")
 
-            if hasattr(option, 'product') is False:
+            if option.get('product') is None:
                 raise serializers.ValidationError(f"Product is required")
 
         return data
