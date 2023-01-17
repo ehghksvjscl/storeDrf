@@ -18,6 +18,10 @@ def create_user(**parms):
     """Create and reutnr a user"""
     return get_user_model().objects.create_user(**parms)
 
+def detail_url(order_id):
+    """Create and return a order detail URL."""
+    return reverse('store:order-detail', args=[order_id])
+
 class PublicOrderAPITests(TestCase):
     def setUp(self):
         self.client = APIClient()  
@@ -90,7 +94,37 @@ class PrivateOrderAPITests(TestCase):
 
     # 주문 내역에는 상품, 옵션, 구매 수량, 옵션별 총 주문 가격 정보들과  배송비가 표시되어야 합니다.
     def test_order_has_product_option_quantity_and_price_and_shipping_fee(self):
-        pass
+        # given
+        call_command('mock_store')
+        product = Product.objects.get(name='위처3')
+        payload = {
+            "options": [
+                {
+                    "product": product.id,
+                    "name": "기본",
+                    "quantity": 10
+                },
+                {
+                    "product": product.id,
+                    "name": "DLC 하츠 오브 스톤",
+                    "quantity": 10
+                }
+            ]
+        }
+        res = self.client.post(ORDER_URL, payload, format='json')
+
+        # when
+        url = detail_url(res.data['id'])
+        res = self.client.get(url)
+
+        # then
+        self.assertEqual(len(res.data['purchases']), 2)
+        self.assertEqual(res.data['quantity'], 20)
+
+        for purchase in res.data['purchases']:
+            self.assertIn('product', purchase)
+            self.assertIn('quantity', purchase)
+            self.assertIn('total_price', purchase)
 
 class ProductAPITests(TestCase):
     
