@@ -33,7 +33,7 @@ def _total_order_price(purchase):
 
 def _shipping_fee(price, basePrice):
     """Shipping fee"""
-    if price < 20000:
+    if price >= 20000:
         return 0
     
     return basePrice
@@ -49,6 +49,7 @@ def extend_order(order, user, options):
 
     order.total_price = total_price
     order.shipping_fee = _shipping_fee(total_price, order.shipping_fee)
+    order.save()
 
     return order
 
