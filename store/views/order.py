@@ -13,7 +13,6 @@ from store.serializers import (
 )
 
 class OrderViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
                    viewsets.GenericViewSet):
 
     serializer_class = OrderSerializer
