@@ -10,7 +10,7 @@ from django.core.management import call_command
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from store.models import Product
+from store.models import Product, Option
 
 ORDER_URL = reverse('store:order-list')
 
@@ -63,21 +63,30 @@ class PrivateOrderAPITests(TestCase):
                 {
                     "product": product.id,
                     "name": "기본",
-                    "quantity": 1
+                    "quantity": 10
                 },
                 {
                     "product": product.id,
                     "name": "DLC 하츠 오브 스톤",
-                    "quantity": 1
+                    "quantity": 10
                 }
             ]
         }
         res = self.client.post(ORDER_URL, payload, format='json')
         self.assertEqual(res.data['shipping_fee'], 0)
 
+        return payload
+
     # 유저가 주문서를 생성 완료한 순간 옵션의 재고량에 반영이 되어야 합니다.
     def test_option_stock_is_changed_when_order_is_created(self):
-        pass
+
+        res = self.test_shipping_fee_is_zero_when_total_price_is_over_20000()
+        options = Option.objects.filter(
+            name__in=[option['name'] for option in res['options']],
+        )
+
+        for option in options:
+            self.assertEqual(option.stock, 0)
 
     # 주문 내역에는 상품, 옵션, 구매 수량, 옵션별 총 주문 가격 정보들과  배송비가 표시되어야 합니다.
     def test_order_has_product_option_quantity_and_price_and_shipping_fee(self):
