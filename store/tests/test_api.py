@@ -18,23 +18,9 @@ def create_user(**parms):
     """Create and reutnr a user"""
     return get_user_model().objects.create_user(**parms)
 
-
-class OrderAPITests(TestCase):
-
+class PublicOrderAPITests(TestCase):
     def setUp(self):
-        self.client = APIClient()
-
-    # 옵션이 지정되지 않으면 주문서 생성이 불가합니다.
-    def test_not_create_without_option(self):
-        self.user = create_user(email='user@example.com', password='userpassword123')
-        self.client.force_authenticate(self.user)
-
-        payload = {
-            "options": []
-        }
-        res = self.client.post(ORDER_URL, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.client = APIClient()  
 
     # 비회원들은 주문서를 생성할 수 없습니다.
     def test_not_create_order_without_login(self):
@@ -51,9 +37,43 @@ class OrderAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
+class PrivateOrderAPITests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(email='user@example.com', password='userpassword123')
+        self.client.force_authenticate(self.user)
+
+    # 옵션이 지정되지 않으면 주문서 생성이 불가합니다.
+    def test_not_create_without_option(self):
+        payload = {
+            "options": []
+        }
+        res = self.client.post(ORDER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
     # 유저가 주문하는 금액의 합계가 20,000원이 넘으면 배송비가 0원으로 변경됩니다.
     def test_shipping_fee_is_zero_when_total_price_is_over_20000(self):
-        pass
+        call_command('mock_store')
+        product = Product.objects.get(name='위처3')
+        payload = {
+            "options": [
+                {
+                    "product": product.id,
+                    "name": "기본",
+                    "quantity": 1
+                },
+                {
+                    "product": product.id,
+                    "name": "DLC 하츠 오브 스톤",
+                    "quantity": 1
+                }
+            ]
+        }
+        res = self.client.post(ORDER_URL, payload, format='json')
+        print(res.data)
 
     # 유저가 주문서를 생성 완료한 순간 옵션의 재고량에 반영이 되어야 합니다.
     def test_option_stock_is_changed_when_order_is_created(self):
