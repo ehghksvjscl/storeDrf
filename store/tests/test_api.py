@@ -73,7 +73,7 @@ class PrivateOrderAPITests(TestCase):
             ]
         }
         res = self.client.post(ORDER_URL, payload, format='json')
-        print(res.data)
+        self.assertEqual(res.data['shipping_fee'], 0)
 
     # 유저가 주문서를 생성 완료한 순간 옵션의 재고량에 반영이 되어야 합니다.
     def test_option_stock_is_changed_when_order_is_created(self):
