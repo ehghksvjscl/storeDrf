@@ -47,5 +47,6 @@ class Purchase(models.Model):
     option = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="purchases")
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="purchases")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
+    shipping_fee = models.PositiveBigIntegerField(default=3000, verbose_name="배송비")
     total_price = models.PositiveBigIntegerField(default=0, verbose_name="옵션 총 가격")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="구매일")

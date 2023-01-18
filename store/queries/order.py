@@ -42,18 +42,23 @@ def extend_order(order, user, options):
     """Create order"""
     total_price = 0
     total_quantity = 0
+    total_shipping_fee = 0
+
+    # TODO Refactor
 
     for option in options:
         optionInstance = get_option(option['product'], option['name'])
         purchase = create_purchase(user, option['quantity'], order, optionInstance)
         total_price += _total_order_price(purchase)
         total_quantity += option['quantity']
+        optionInstance.shipping_fee = _shipping_fee(_total_order_price(purchase), optionInstance.shipping_fee)
+        total_shipping_fee += optionInstance.shipping_fee
         optionInstance.stock -= option['quantity']
         optionInstance.save()
 
     order.total_price = total_price
     order.quantity = total_quantity
-    order.shipping_fee = _shipping_fee(total_price, order.shipping_fee)
+    order.shipping_fee = total_shipping_fee
     order.save()
 
     return order
