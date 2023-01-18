@@ -21,7 +21,7 @@ class Option(models.Model):
 
 class Cart(models.Model):
     """Cart models"""
-    user = models.ForeignKey("user.User", on_delete=models.CASCADE, related_name="carts")
+    user = models.ForeignKey("user.User", on_delete=models.SET_NULL, related_name="carts")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="carts")
     option = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="carts")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
@@ -30,7 +30,7 @@ class Cart(models.Model):
 
 class Order(models.Model):
     """Order models"""
-    user = models.ForeignKey("user.User", on_delete=models.CASCADE, related_name="orders")
+    user = models.ForeignKey("user.User", on_delete=models.SET_NULL, related_name="orders")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
     shipping_fee = models.PositiveBigIntegerField(default=3000, verbose_name="배송비")
     shipping_address = models.CharField(max_length=255, default="", verbose_name="배송지")
@@ -42,9 +42,9 @@ class Order(models.Model):
     
 class Purchase(models.Model):
     """Purchase models"""
-    user = models.ForeignKey("user.User", on_delete=models.CASCADE, related_name="purchases")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="purchases")
-    option = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="purchases")
+    user = models.ForeignKey("user.User", on_delete=models.SET_NULL, related_name="purchases")
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name="purchases")
+    option = models.ForeignKey(Option, on_delete=models.SET_NULL, related_name="purchases")
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="purchases")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
     shipping_fee = models.PositiveBigIntegerField(default=3000, verbose_name="배송비")
