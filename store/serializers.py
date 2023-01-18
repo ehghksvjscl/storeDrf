@@ -3,14 +3,22 @@ Order Serializer
 """
 
 from rest_framework import serializers
-from store.models import Order, Purchase, Option
+from store.models import Order, Purchase, Option, Product
 from store.queries.order import extend_order, get_option
+
+class ProductSerializer(serializers.ModelSerializer):
+    """Serializer for Product"""
+
+    class Meta:
+        model = Product
+        fields = ('name', )
+
 class OptionSerializer(serializers.ModelSerializer):
     """Serializer for Option"""
 
     class Meta:
         model = Option
-        fields = '__all__'
+        fields = ('id', 'name', 'price', 'stock')
         read_only_fields = ('id', 'created_at')
 
 
@@ -26,11 +34,13 @@ class OrderOptionSerializer(serializers.ModelSerializer):
 class PurchaseSerializer(serializers.ModelSerializer):
     """Serializer for Purchase"""
 
-    options = OptionSerializer(many=True, read_only=True)
+    option = OptionSerializer(read_only=True)
+    product = ProductSerializer(read_only=True) 
+
 
     class Meta:
         model = Purchase
-        fields = ('id', 'order', 'quantity', 'options', 'total_price', 'created_at')
+        fields = ('id', 'order', 'quantity', 'shipping_fee', 'option', 'product', 'total_price', 'created_at')
 
 
 class OrderSerializer(serializers.ModelSerializer):

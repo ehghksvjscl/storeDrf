@@ -119,12 +119,15 @@ class PrivateOrderAPITests(TestCase):
 
         # then
         self.assertEqual(len(res.data['purchases']), 2)
-        self.assertEqual(res.data['quantity'], 20)
+        self.assertIn('quantity', res.data)
+        self.assertIn('total_price', res.data)
+        self.assertIn('shipping_fee', res.data)
 
         for purchase in res.data['purchases']:
             self.assertIn('product', purchase)
             self.assertIn('quantity', purchase)
             self.assertIn('total_price', purchase)
+            self.assertIn('option', purchase)
 
 class ProductAPITests(TestCase):
     

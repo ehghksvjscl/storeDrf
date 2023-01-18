@@ -13,16 +13,25 @@ def _total_option_price(option, quantity):
     """Total price"""
     return (option.product.price + option.price) * quantity
 
-def create_purchase(user, quantity, order, option):
+def _shipping_fee(price, basePrice=3000):
+    """Shipping fee"""
+    if price >= 20000:
+        return 0
+    
+    return basePrice
+
+def create_purchase(user, option_parms, order, option):
     """Create purchase"""
+    total_price = _total_option_price(option, option_parms['quantity'])
 
     result = Purchase.objects.create(
         user=user,
         product=option.product,
         option=option,
         order=order,
-        quantity=quantity,
-        total_price=_total_option_price(option, quantity)
+        quantity=option_parms['quantity'],
+        total_price=total_price,
+        shipping_fee = _shipping_fee(total_price)
     )
 
     return result
@@ -30,13 +39,6 @@ def create_purchase(user, quantity, order, option):
 def _total_order_price(purchase):
     """Total price"""
     return purchase.total_price
-
-def _shipping_fee(price, basePrice):
-    """Shipping fee"""
-    if price >= 20000:
-        return 0
-    
-    return basePrice
 
 def extend_order(order, user, options):
     """Create order"""
@@ -48,11 +50,9 @@ def extend_order(order, user, options):
 
     for option in options:
         optionInstance = get_option(option['product'], option['name'])
-        purchase = create_purchase(user, option['quantity'], order, optionInstance)
+        purchase = create_purchase(user, option, order, optionInstance)
         total_price += _total_order_price(purchase)
         total_quantity += option['quantity']
-        optionInstance.shipping_fee = _shipping_fee(_total_order_price(purchase), optionInstance.shipping_fee)
-        total_shipping_fee += optionInstance.shipping_fee
         optionInstance.stock -= option['quantity']
         optionInstance.save()
 
