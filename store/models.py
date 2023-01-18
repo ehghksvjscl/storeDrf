@@ -10,6 +10,9 @@ class Product(models.Model):
     name = models.CharField(max_length=255, verbose_name="대표이름")
     price = models.PositiveBigIntegerField(default=0, verbose_name="기본가격")
 
+    def __str__(self):
+        return self.name
+
 
 class Option(models.Model):
     """Option models"""
@@ -18,10 +21,17 @@ class Option(models.Model):
     price = models.PositiveBigIntegerField(default=0, verbose_name="옵션가격")
     stock = models.PositiveIntegerField(default=0, verbose_name="재고")
 
+    class Meta:
+        unique_together = ("product", "name")
+        index_together = ("product", "name")
+
+    def __str__(self):
+        return self.name
+
 
 class Cart(models.Model):
     """Cart models"""
-    user = models.ForeignKey("user.User", on_delete=models.SET_NULL, related_name="carts")
+    user = models.ForeignKey("user.User", null=True, on_delete=models.SET_NULL, related_name="carts")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="carts")
     option = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="carts")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
@@ -30,7 +40,7 @@ class Cart(models.Model):
 
 class Order(models.Model):
     """Order models"""
-    user = models.ForeignKey("user.User", on_delete=models.SET_NULL, related_name="orders")
+    user = models.ForeignKey("user.User",null=True ,on_delete=models.SET_NULL, related_name="orders")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
     shipping_fee = models.PositiveBigIntegerField(default=3000, verbose_name="배송비")
     shipping_address = models.CharField(max_length=255, default="", verbose_name="배송지")
@@ -42,9 +52,9 @@ class Order(models.Model):
     
 class Purchase(models.Model):
     """Purchase models"""
-    user = models.ForeignKey("user.User", on_delete=models.SET_NULL, related_name="purchases")
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name="purchases")
-    option = models.ForeignKey(Option, on_delete=models.SET_NULL, related_name="purchases")
+    user = models.ForeignKey("user.User", null=True, on_delete=models.SET_NULL, related_name="purchases")
+    product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, related_name="purchases")
+    option = models.ForeignKey(Option, null=True, on_delete=models.SET_NULL, related_name="purchases")
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="purchases")
     quantity = models.PositiveIntegerField(default=1, verbose_name="수량")
     shipping_fee = models.PositiveBigIntegerField(default=3000, verbose_name="배송비")
