@@ -40,6 +40,13 @@ def _total_order_price(purchase):
     """Total price"""
     return purchase.total_price
 
+def _set_is_sold_out(option, quantity):
+    """Set is sold out"""
+    if option.stock - quantity <= 0:
+        return True
+        
+    return False
+
 def extend_order(order, user, options):
     """Create order"""
     total_price = 0
@@ -54,6 +61,7 @@ def extend_order(order, user, options):
         total_price += _total_order_price(purchase)
         total_quantity += option['quantity']
         option_instance.stock -= option['quantity']
+        option_instance.is_sold_out = _set_is_sold_out(option_instance, option['quantity'])
         option_instance.save()
 
     order.total_price = total_price

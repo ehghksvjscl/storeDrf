@@ -67,11 +67,14 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Options is required')
 
         for option in options:
-            if get_option(option['product'], option['name']) is None:
+            option_instance = get_option(option['product'], option['name'])
+            if option_instance is None:
                 raise serializers.ValidationError(f"Option {option['name']} is not available")
 
             if option.get('quantity') is None:
                 raise serializers.ValidationError(f"Quantity is required")
+            elif option_instance.stock < option.get('quantity'):
+                raise serializers.ValidationError(f"Quantity is not available")
 
             if option.get('name') is None:
                 raise serializers.ValidationError(f"Name is required")

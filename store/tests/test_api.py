@@ -134,6 +134,15 @@ class PrivateOrderAPITests(TestCase):
             self.assertIn('total_price', purchase)
             self.assertIn('option', purchase)
 
+    # 유저가 주문서를 생성 완료한 순간 옵션의 재고량이 0이 되면 옵션의 판매 여부가 품절로 변경됩니다.
+    def test_option_is_sold_out_when_stock_is_zero(self):
+        res = self.test_shipping_fee_is_zero_when_total_price_is_over_20000()
+
+        for option in res['options']:
+            option = Option.objects.get(name=option['name'], product=option['product'])
+            self.assertTrue(option.is_sold_out, True)
+
+
 class ProductAPITests(TestCase):
     
     def setUp(self):
@@ -150,12 +159,6 @@ class ProductAPITests(TestCase):
 
         res = ProductViewSet.as_view({'get': 'retrieve'})(request, pk=product_id)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-class OptionAPITests(TestCase):
-
-    # 유저가 주문서를 생성 완료한 순간 옵션의 재고량이 0이 되면 옵션의 판매 여부가 품절로 변경됩니다.
-    def test_option_is_sold_out_when_stock_is_zero(self):
-        pass
 
 class CartAPITests(TestCase):
 
