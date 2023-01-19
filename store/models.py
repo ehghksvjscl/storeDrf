@@ -20,6 +20,7 @@ class Option(models.Model):
     name = models.CharField(max_length=255, verbose_name="옵션명")
     price = models.PositiveBigIntegerField(default=0, verbose_name="옵션가격")
     stock = models.PositiveIntegerField(default=0, verbose_name="재고")
+    is_sold_out = models.BooleanField(default=False, verbose_name="품절여부")
 
     class Meta:
         unique_together = ("product", "name")
