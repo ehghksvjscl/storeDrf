@@ -124,7 +124,6 @@ class PrivateOrderAPITests(TestCase):
         res = self.client.get(url)
 
         # then
-        print(res.data)
         self.assertEqual(len(res.data['purchases']), 2)
         self.assertIn('quantity', res.data)
         self.assertIn('total_price', res.data)
@@ -164,6 +163,11 @@ class ProductAPITests(TestCase):
 
 class CartAPITests(TestCase):
 
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(email='user@example.com', password='userpassword123')
+        self.client.force_authenticate(self.user)
+        
     #장바구니에는 옵션을 설정한 상품을 담을 수 있습니다.
     def test_cart_has_option(self):
         pass

@@ -34,7 +34,6 @@ class OrderDetailView(APIView):
 
     def get(self, request, pk=None):
         """Get order detail"""
-        print
-        order = Order.objects.filter(user=request.user, id=pk)
+        order = Order.objects.filter(user=request.user, id=pk).first()
         serializer = OrderSerializer(order)
         return Response(serializer.data)
