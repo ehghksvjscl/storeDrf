@@ -2,17 +2,18 @@
 Test Model
 """
 
-from django.test import TestCase
-from django.urls import reverse
+from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+from django.contrib.auth.models import AnonymousUser
 
 from rest_framework.test import APIClient
 from rest_framework import status
 
 from store.models import Product, Option
+from store.views.option import ProductViewSet
 
-ORDER_URL = reverse('store:order-list')
+ORDER_URL = '/api/store/order/'
 
 def create_user(**parms):
     """Create and reutnr a user"""
@@ -20,7 +21,11 @@ def create_user(**parms):
 
 def detail_url(order_id):
     """Create and return a order detail URL."""
-    return reverse('store:order-detail', args=[order_id])
+    return '/api/store/order/{}/'.format(order_id)
+
+def product_detail_url(product_id):
+    """Create and return a product detail URL."""
+    return '/api/store/product/{}/'.format(product_id)
 
 class PublicOrderAPITests(TestCase):
     def setUp(self):
@@ -131,11 +136,23 @@ class PrivateOrderAPITests(TestCase):
 
 class ProductAPITests(TestCase):
     
+    def setUp(self):
+        self.client = APIClient()
+        self.factory = RequestFactory()
+
     # 비회원들은 상품 정보를 조회할 수 있습니다.
     def test_anonymous_user_can_search_order(self):
-        pass
+        call_command('mock_store')
+        product_id = Product.objects.all().first().id
+
+        request = self.factory.get(product_detail_url(product_id))
+        request.user = AnonymousUser()
+
+        res = ProductViewSet.as_view({'get': 'retrieve'})(request, pk=product_id)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
 class OptionAPITests(TestCase):
+
     # 유저가 주문서를 생성 완료한 순간 옵션의 재고량이 0이 되면 옵션의 판매 여부가 품절로 변경됩니다.
     def test_option_is_sold_out_when_stock_is_zero(self):
         pass
