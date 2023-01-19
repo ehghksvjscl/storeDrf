@@ -186,7 +186,44 @@ class CartAPITests(TestCase):
 
     # 장바구니에서는 다수의 상품을 한 번에 구매(주문서 생성)할 수 있습니다.
     def test_cart_can_create_order(self):
-        pass
+        # given
+        call_command('mock_store')
+        last_option = Option.objects.all().last()
+        first_option = Option.objects.all().first()
+
+        payload1 = {
+            'product': last_option.product.id,
+            'option': last_option.id,
+            'quantity': 10
+        }
+        payload2 = {
+            'product': first_option.product.id,
+            'option': first_option.id,
+            'quantity': 1
+        }
+        res = self.client.post(CART_URL, payload1)
+        res = self.client.post(CART_URL, payload2)
+
+        # when  
+        res = self.client.get(CART_URL)
+        payload = {
+            'options': [
+                {
+                    'product': res.data[0]['product']['id'],
+                    'name': res.data[0]['option']['name'],
+                    'quantity': res.data[0]['quantity']
+                },
+                {
+                    'product': res.data[1]['product']['id'],
+                    'name': res.data[1]['option']['name'],
+                    'quantity': res.data[1]['quantity']
+                }
+            ]
+        }
+
+        # then
+        res = self.client.post(ORDER_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     # 장바구니에 담긴 상품 옵션 중 재고량이 0인 상품이 포함되어 있다면, 구매가 불가능합니다.
     def test_cart_can_not_create_order_when_option_is_sold_out(self):
