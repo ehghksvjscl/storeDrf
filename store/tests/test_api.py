@@ -227,7 +227,23 @@ class CartAPITests(TestCase):
 
     # 장바구니에 담긴 상품 옵션 중 재고량이 0인 상품이 포함되어 있다면, 구매가 불가능합니다.
     def test_cart_can_not_create_order_when_option_is_sold_out(self):
-        pass
+        call_command('mock_store')
+        last_option = Option.objects.all().last()
+
+        payload = {
+            'options': [
+                {
+                    'product': last_option.product.id,
+                    'name': last_option.name,
+                    'quantity': 10
+                }
+            ]
+        }
+        res = self.client.post(ORDER_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        res = self.client.post(ORDER_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     # 장바구니에서는 담긴 상품을 선택하여 주문할 수 있습니다.
     def test_cart_can_create_order_with_selected_product(self):
