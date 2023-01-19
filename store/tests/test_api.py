@@ -6,26 +6,27 @@ from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.contrib.auth.models import AnonymousUser
+from django.urls import reverse
 
 from rest_framework.test import APIClient
 from rest_framework import status
 
 from store.models import Product, Option
-from store.views.option import ProductViewSet
+from store.views.option import ProductView
 
-ORDER_URL = '/api/store/order/'
+ORDER_URL = reverse('store:order-create') 
 
 def create_user(**parms):
     """Create and reutnr a user"""
     return get_user_model().objects.create_user(**parms)
 
-def detail_url(order_id):
+def order_detail_url(order_id):
     """Create and return a order detail URL."""
-    return '/api/store/order/{}/'.format(order_id)
+    return reverse('store:order-detail', args=[order_id])
 
 def product_detail_url(product_id):
     """Create and return a product detail URL."""
-    return '/api/store/product/{}/'.format(product_id)
+    return reverse('store:product-detail', args=[product_id])
 
 class PublicOrderAPITests(TestCase):
     def setUp(self):
@@ -119,10 +120,11 @@ class PrivateOrderAPITests(TestCase):
         res = self.client.post(ORDER_URL, payload, format='json')
 
         # when
-        url = detail_url(res.data['id'])
+        url = order_detail_url(res.data['id'])
         res = self.client.get(url)
 
         # then
+        print(res.data)
         self.assertEqual(len(res.data['purchases']), 2)
         self.assertIn('quantity', res.data)
         self.assertIn('total_price', res.data)
@@ -157,7 +159,7 @@ class ProductAPITests(TestCase):
         request = self.factory.get(product_detail_url(product_id))
         request.user = AnonymousUser()
 
-        res = ProductViewSet.as_view({'get': 'retrieve'})(request, pk=product_id)
+        res = ProductView.as_view()(request, pk=product_id)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
 class CartAPITests(TestCase):

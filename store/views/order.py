@@ -2,9 +2,10 @@
 Order View
 """
 
-from rest_framework import viewsets, mixins
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 
 from store.models import Order
 from store.serializers import (
@@ -12,17 +13,28 @@ from store.serializers import (
     OrderCreateSerializer
 )
 
-class OrderViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   viewsets.GenericViewSet):
+class OrderView(APIView):
 
-    serializer_class = OrderSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-    queryset = Order.objects.all()
+    permission_classes = (IsAuthenticated,)
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return OrderCreateSerializer
+    def post(self, request):
+        """Create an order"""
+        serializer = OrderCreateSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+            
+        return Response(serializer.errors, status=400)
 
-        return self.serializer_class
+class OrderDetailView(APIView):
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk=None):
+        """Get order detail"""
+        print
+        order = Order.objects.filter(user=request.user, id=pk)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)

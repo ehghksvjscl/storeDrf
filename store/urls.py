@@ -1,19 +1,16 @@
 """URL mappings for the store app"""
 
-from django.urls import path, include
-
-from rest_framework.routers import DefaultRouter
-
-from store.views.order import OrderViewSet
-from store.views.option import ProductViewSet
+from django.urls import path
 
 
-router = DefaultRouter()
-router.register('order', OrderViewSet)
-router.register('product', ProductViewSet)
+from store.views.order import OrderView,OrderDetailView
+from store.views.option import ProductView
+
 
 app_name = 'store'
 
 urlpatterns= [
-    path('', include(router.urls))
+    path('order/', OrderView.as_view(), name='order-create'),
+    path('order/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
+    path('product/<int:pk>/', ProductView.as_view(), name='product-detail'),
 ]
