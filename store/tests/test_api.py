@@ -15,7 +15,7 @@ from store.models import Product, Option
 from store.views.option import ProductView
 
 ORDER_URL = reverse('store:order-create')
-CART_URL = reverse('store:cart-create')
+CART_URL = reverse('store:cart')
 
 def create_user(**parms):
     """Create and reutnr a user"""

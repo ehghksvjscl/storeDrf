@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from store.models import Cart
 from store.serializers import (
     CartCreateSerializer,
-    ProductSerializer
+    CartSerializer
 )
 
 class CartView(APIView):
@@ -23,7 +23,13 @@ class CartView(APIView):
         """ Add product to cart """
         serializer = CartCreateSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
+            cart = serializer.save()
+            return Response(CartSerializer(cart).data, status=201)
 
         return Response(serializer.errors, status=400)
+
+    def get(self, request):
+        """ Get cart """
+        cart = Cart.objects.filter(user=request.user)
+        serializer = CartSerializer(cart, many=True)
+        return Response(serializer.data)

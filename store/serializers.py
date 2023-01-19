@@ -11,7 +11,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('name', )
+        fields = ('id','name')
 
 class OptionSerializer(serializers.ModelSerializer):
     """Serializer for Option"""
@@ -98,6 +98,17 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'quantity', 'shipping_fee', 'shipping_address', 'total_price', 'is_cart', 'created_at', 'options')
         read_only_fields = ('id', 'user', 'created_at', 'total_price', 'is_cart', 'quantity', 'shipping_fee', 'shipping_address')
 
+class CartSerializer(serializers.ModelSerializer):
+    """Serializer for Cart"""
+
+    option = OptionSerializer(read_only=True)
+    product = ProductSerializer(read_only=True) 
+
+    class Meta:
+        model = Cart
+        fields = ('id', 'user', 'quantity', 'option', 'product', 'created_at')
+        read_only_fields = ('id', 'user', 'created_at')
+
 class CartCreateSerializer(serializers.Serializer):
     """Serializer for CartCreate"""
 
@@ -108,10 +119,14 @@ class CartCreateSerializer(serializers.Serializer):
         """Validate option"""
 
         option = data.get('option')
+        user = self.context['request'].user
 
         option_instance = Option.objects.filter(id=option).first()
         if option_instance is None:
             raise serializers.ValidationError(f"Option {option} is not available")
+
+        if Cart.objects.filter(option=option_instance.id, user=user).exists(): 
+            raise serializers.ValidationError(f"Option {option} is already in cart")
 
         return data
 
