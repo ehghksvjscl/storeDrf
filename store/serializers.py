@@ -75,6 +75,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"Quantity is required")
             elif option_instance.stock < option.get('quantity'):
                 raise serializers.ValidationError(f"stock is not enough")
+            elif option_instance.stock == 0:
+                raise serializers.ValidationError(f"stock is not enough")
 
             if option.get('name') is None:
                 raise serializers.ValidationError(f"Name is required")
