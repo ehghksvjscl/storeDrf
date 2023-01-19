@@ -18,6 +18,7 @@ class ProductView(APIView):
     queryset = Option.objects.all()
 
     def get(self, request, pk=None):
+        """ Get product detail """
         product_id = pk
         optioon_instance = Option.objects.filter(product_id=product_id)
         product_instance = Product.objects.get(id=product_id)

@@ -3,7 +3,7 @@ Order Serializer
 """
 
 from rest_framework import serializers
-from store.models import Order, Purchase, Option, Product
+from store.models import Order, Purchase, Option, Product, Cart
 from store.queries.order import extend_order, get_option
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -74,7 +74,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             if option.get('quantity') is None:
                 raise serializers.ValidationError(f"Quantity is required")
             elif option_instance.stock < option.get('quantity'):
-                raise serializers.ValidationError(f"Quantity is not available")
+                raise serializers.ValidationError(f"stock is not enough")
 
             if option.get('name') is None:
                 raise serializers.ValidationError(f"Name is required")
@@ -97,3 +97,37 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'user', 'quantity', 'shipping_fee', 'shipping_address', 'total_price', 'is_cart', 'created_at', 'options')
         read_only_fields = ('id', 'user', 'created_at', 'total_price', 'is_cart', 'quantity', 'shipping_fee', 'shipping_address')
+
+class CartCreateSerializer(serializers.Serializer):
+    """Serializer for CartCreate"""
+
+    option = serializers.IntegerField(write_only=True)
+    quantity = serializers.IntegerField(write_only=True)
+
+    def validate(self, data):
+        """Validate option"""
+
+        option = data.get('option')
+
+        option_instance = Option.objects.filter(id=option).first()
+        if option_instance is None:
+            raise serializers.ValidationError(f"Option {option} is not available")
+
+        return data
+
+    def create(self, validated_data):
+        """Create cart"""
+        user = self.context['request'].user
+        option = validated_data.pop('option')
+        quantity = validated_data.pop('quantity')
+
+        option_instence = Option.objects.filter(id=option).select_related('product').first()
+
+        cart = Cart.objects.create(
+            user=user,
+             option=option_instence,
+             product=option_instence.product,
+             quantity=quantity
+        )
+
+        return cart

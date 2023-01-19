@@ -14,7 +14,8 @@ from rest_framework import status
 from store.models import Product, Option
 from store.views.option import ProductView
 
-ORDER_URL = reverse('store:order-create') 
+ORDER_URL = reverse('store:order-create')
+CART_URL = reverse('store:cart-create')
 
 def create_user(**parms):
     """Create and reutnr a user"""
@@ -167,10 +168,21 @@ class CartAPITests(TestCase):
         self.client = APIClient()
         self.user = create_user(email='user@example.com', password='userpassword123')
         self.client.force_authenticate(self.user)
-        
+
     #장바구니에는 옵션을 설정한 상품을 담을 수 있습니다.
     def test_cart_has_option(self):
-        pass
+        call_command('mock_store')
+        product = Product.objects.get(name='위처3')
+        option = Option.objects.get(product=product, name='기본')
+
+        payload = {
+            'product': product.id,
+            'option': option.id,
+            'quantity': 1
+        }
+
+        res = self.client.post(CART_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     # 장바구니에서는 다수의 상품을 한 번에 구매(주문서 생성)할 수 있습니다.
     def test_cart_can_create_order(self):
