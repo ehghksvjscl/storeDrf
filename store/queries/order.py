@@ -49,12 +49,12 @@ def extend_order(order, user, options):
     # TODO Refactor
 
     for option in options:
-        optionInstance = get_option(option['product'], option['name'])
-        purchase = create_purchase(user, option, order, optionInstance)
+        option_instance = get_option(option['product'], option['name'])
+        purchase = create_purchase(user, option, order, option_instance)
         total_price += _total_order_price(purchase)
         total_quantity += option['quantity']
-        optionInstance.stock -= option['quantity']
-        optionInstance.save()
+        option_instance.stock -= option['quantity']
+        option_instance.save()
 
     order.total_price = total_price
     order.quantity = total_quantity
