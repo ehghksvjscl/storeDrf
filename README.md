@@ -67,4 +67,5 @@
 ## TODO Refeator
  - 순수 함수 만들기 (필수)
  - 복잡한 함수 class 형태로 바꾸기 (필수)
- - query 파일 분리. - 리펙토링 (필수)
+ - query 파일 분리  (필수)
+ - type hint 작성 (필수)
