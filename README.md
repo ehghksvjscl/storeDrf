@@ -26,6 +26,30 @@
 ## ERD
 ![주문(옵션)](https://user-images.githubusercontent.com/22442843/212725276-e0801e9b-6605-4b18-b1d7-3e85e3054bd9.png)
 
+## API List
+
+### 주문
+
+| Method | Path | Description |
+|:------:|:----:|:-----------:|
+| POST   | /orders/ | 주문 생성 |
+| GET    | /orders/ | 주문 조회 |
+| GET    | /orders/{order_id}/ | 주문 상세 조회 |
+
+### 장바구니
+
+| Method | Path | Description |
+|:------:|:----:|:-----------:|
+| POST   | /carts/ | 장바구니 생성 |
+| GET    | /carts/ | 장바구니 조회 |
+
+### 상품
+
+| Method | Path | Description |
+|:------:|:----:|:-----------:|
+| GET    | /products/{product_id}/ | 상품 상세 조회 |
+
+
 
 ## Qustion
  - [ ] CASECADE가 많을 경우 (nginx가 터진다거나, DB 연결 시간이 끊긴다거나) timeout이 발생하는데 이를 해결할 수 있는 방법이 있을까요?
@@ -36,6 +60,11 @@
 
 ## Why?
 
+  ### Why API가 2개 필요한가?
  - 유저가 장바구니에서 원하는 상품을 선택해 한 번에 주문하는 기능 (POST)
-   1. 프론트에서 주문할 상품들의 정보를 받아온다.(프론트)
-   2. 주문할 상품들의 정보를 바탕으로 주문을 생성한다.(백앤드)
+ - 유저가 상품의 옵션을 선택 후 주문서를 생성하는 기능 (POST)
+
+## TODO Refeator
+ - 순수 함수 많들기
+ - 복잡한 함수 class 형태로 바꾸기
+ 
