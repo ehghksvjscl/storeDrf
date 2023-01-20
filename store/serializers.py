@@ -59,6 +59,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
     options = serializers.ListField(write_only=True)
 
+    # TODO : Refactor this
+
     def validate(self, data):
         """Validate options"""
 
