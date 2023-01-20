@@ -9,6 +9,7 @@
 
 5. `pip install -m pip install -U pip wheel`를 통해 pip 최신버전으로 업그레이드 하세요
 6. `pip install -r requirements.txt`를 통해 패키지를 다운로드 받으세요
+7. `python manage.py test`를 통해 테스트를 실행 하세요.
 7. `python manage.py runserver`를 통해 실행 시키세요.
 
 ## Commit Message Type
