@@ -245,9 +245,6 @@ class CartAPITests(TestCase):
         res = self.client.post(ORDER_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # 장바구니에서는 담긴 상품을 선택하여 주문할 수 있습니다.
-    def test_cart_can_create_order_with_selected_product(self):
-        pass    
 
     # 유저는 바로 구매, 장바구니 구매와 상관없이 주문 내역 리스트를 조회할 수 있습니다.
     def test_user_can_search_order_list(self):
