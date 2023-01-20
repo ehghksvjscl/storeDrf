@@ -119,6 +119,8 @@ class CartCreateSerializer(serializers.Serializer):
     option = serializers.IntegerField(write_only=True)
     quantity = serializers.IntegerField(write_only=True)
 
+    # TODO : Refactor (순수함수로 만들기)
+
     def validate(self, data):
         """Validate option"""
 
@@ -134,6 +136,7 @@ class CartCreateSerializer(serializers.Serializer):
 
         return data
 
+    # TODO : Refactor (어떻게 하면 좋을까?)
     def create(self, validated_data):
         """Create cart"""
         user = self.context['request'].user

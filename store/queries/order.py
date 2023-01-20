@@ -4,6 +4,8 @@ Query for order
 
 from store.models import Order, Purchase, Option
 
+# TODO Refactor(Class 형태로 만들기)
+
 def get_option(product, name):
     """Get option"""
     return Option.objects.filter(product=product,name=name) \
