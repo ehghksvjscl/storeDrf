@@ -248,4 +248,7 @@ class CartAPITests(TestCase):
 
     # 유저는 바로 구매, 장바구니 구매와 상관없이 주문 내역 리스트를 조회할 수 있습니다.
     def test_user_can_search_order_list(self):
-        pass
+        call_command('mock_store')
+
+        res = self.client.get(ORDER_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

@@ -18,6 +18,12 @@ class OrderView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def get(self, request):
+        """Get order list"""
+        orders = Order.objects.filter(user=request.user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+        
     def post(self, request):
         """Create an order"""
         serializer = OrderCreateSerializer(data=request.data, context={'request': request})
