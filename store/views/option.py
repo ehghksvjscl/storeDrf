@@ -5,6 +5,7 @@ Option View
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework import status
 
 from store.models import Option, Product
 from store.serializers import OptionSerializer, ProductSerializer
@@ -26,4 +27,4 @@ class ProductView(APIView):
         result = product_serializer.data
         result["options"] = option_serializer.data
 
-        return Response(result)
+        return Response(result, status=status.HTTP_200_OK)
