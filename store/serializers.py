@@ -165,16 +165,15 @@ class CartCreateSerializer(serializers.Serializer):
     option = serializers.IntegerField(write_only=True)
     quantity = serializers.IntegerField(write_only=True)
 
-    # TODO : Refactor (순수함수로 만들기)
-
     def validate(self, data):
         """Validate option"""
 
         option = data.get("option")
         user = self.context["request"].user
 
-        option_instance = Option.objects.filter(id=option).first()
-        if option_instance is None:
+        try:
+            option_instance = Option.objects.get(id=option)
+        except:
             raise serializers.ValidationError(f"Option {option} is not available")
 
         if Cart.objects.filter(option=option_instance.id, user=user).exists():
