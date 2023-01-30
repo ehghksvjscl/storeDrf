@@ -4,7 +4,8 @@ Order Serializer
 
 from rest_framework import serializers
 from store.models import Order, Purchase, Option, Product, Cart
-from store.queries.order import extend_order, get_option
+from store.queries.order import extend_order, get_option, create_order
+from store.queries.cart import create_cart
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -92,7 +93,10 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Options is required")
 
         for option in options:
-            option_instance = get_option(option["product"], option["name"])
+            option_instance = get_option(
+                product=option["product"],
+                name=option["name"],
+            )
             if option_instance is None:
                 raise serializers.ValidationError(
                     f"Option {option['name']} is not available"
@@ -117,7 +121,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         """Create order"""
         user = self.context["request"].user
         options = validated_data.pop("options")
-        order = Order.objects.create(user=user)
+        order = create_order(user=user)
         order = extend_order(order, user, options)
 
         return order
@@ -172,7 +176,7 @@ class CartCreateSerializer(serializers.Serializer):
         user = self.context["request"].user
 
         try:
-            option_instance = Option.objects.get(id=option)
+            option_instance = get_option(id=option)
         except:
             raise serializers.ValidationError(f"Option {option} is not available")
 
@@ -188,11 +192,9 @@ class CartCreateSerializer(serializers.Serializer):
         option = validated_data.pop("option")
         quantity = validated_data.pop("quantity")
 
-        option_instence = (
-            Option.objects.filter(id=option).select_related("product").first()
-        )
+        option_instence = get_option(id=option)
 
-        cart = Cart.objects.create(
+        cart = create_cart(
             user=user,
             option=option_instence,
             product=option_instence.product,

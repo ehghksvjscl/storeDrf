@@ -10,6 +10,11 @@ from .option import get_option, set_is_sold_out
 from .purchase import create_purchase, total_order_price
 
 
+def create_order(**kwargs):
+    """Create order"""
+    return Order.objects.create(**kwargs)
+
+
 def get_order(**kwargs):
     """Get order"""
     return Order.objects.filter(**kwargs).first()
@@ -29,7 +34,7 @@ def extend_order(order, user, options):
     # TODO Refactor
 
     for option in options:
-        option_instance = get_option(option["product"], option["name"])
+        option_instance = get_option(product=option["product"], name=option["name"])
         purchase = create_purchase(user, option, order, option_instance)
         total_price += total_order_price(purchase)
         total_quantity += option["quantity"]

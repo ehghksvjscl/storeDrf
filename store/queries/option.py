@@ -1,13 +1,11 @@
+from django.shortcuts import get_object_or_404
+
 from store.models import Option
 
 
-def get_option(product, name):
+def get_option(**kwargs):
     """Get option"""
-    return (
-        Option.objects.filter(product=product, name=name)
-        .select_related("product")
-        .first()
-    )
+    return Option.objects.get(**kwargs)
 
 
 def total_option_price(option, quantity):
