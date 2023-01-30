@@ -1,6 +1,7 @@
 """
 Order View
 """
+from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -42,6 +43,6 @@ class OrderDetailView(APIView):
 
     def get(self, request, pk=None):
         """Get order detail"""
-        order = Order.objects.filter(user=request.user, id=pk).first()
+        order = get_object_or_404(Order, user=request.user, id=pk)
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)

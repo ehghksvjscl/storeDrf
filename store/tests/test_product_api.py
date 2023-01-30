@@ -11,7 +11,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from store.models import Product
-from store.views.product import ProductView
+from store.views.product import ProductDetailView
 
 
 def product_detail_url(product_id):
@@ -32,5 +32,5 @@ class ProductAPITests(TestCase):
         request = self.factory.get(product_detail_url(product_id))
         request.user = AnonymousUser()
 
-        res = ProductView.as_view()(request, pk=product_id)
+        res = ProductDetailView.as_view()(request, pk=product_id)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
