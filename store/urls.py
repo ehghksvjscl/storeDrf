@@ -4,7 +4,7 @@ from django.urls import path
 
 
 from store.views.order import OrderView, OrderDetailView
-from store.views.option import ProductView
+from store.views.product import ProductView
 from store.views.cart import CartView
 
 

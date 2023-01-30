@@ -11,7 +11,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from store.models import Product
-from store.views.option import ProductView
+from store.views.product import ProductView
 
 
 def product_detail_url(product_id):
