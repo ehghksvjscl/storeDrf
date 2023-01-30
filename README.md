@@ -54,7 +54,9 @@
 
 ## 피드백
 
-- [ ] 컨벤션 적용하기 (black)
+- [x] 컨벤션 적용하기 (black)
 - [x] status code에 대한 일관성 - 200은 성공을 의미하고, 201은 생성을 의미합니다. - 400은 클라이언트의 요청이 잘못되었을 때를 의미합니다. - 제가 생각하는 404코드는 "데이터가 없는 것이 에러인 상황"에서는 404를 사용합니다. - 또한 "데이터가 없어도 이상하지 않는 상황"에서는 200을 사용합니다. - 즉 GET orders 같은 경우는 200, orders/{order_id}/ 같은 경우는 404를 사용합니다.
 - [x] store 앱의 views-product.py 예외처리
 - [x] product를 역참조 하여 option 구하기.
+- [x] CartCreateSerializer 예외처리 수정하기
+- [ ] query & function 분리하기
