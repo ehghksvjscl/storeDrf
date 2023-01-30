@@ -18,3 +18,8 @@ def get_cart_list(**kwargs):
 def create_cart(**kwargs):
     """Create cart"""
     return Cart.objects.create(**kwargs)
+
+
+def cart_exists(**kwargs):
+    """Cart exists"""
+    return Cart.objects.filter(**kwargs).exists()

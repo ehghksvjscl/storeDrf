@@ -5,7 +5,7 @@ Order Serializer
 from rest_framework import serializers
 from store.models import Order, Purchase, Option, Product, Cart
 from store.queries.order import extend_order, get_option, create_order
-from store.queries.cart import create_cart
+from store.queries.cart import create_cart, cart_exists
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -180,7 +180,7 @@ class CartCreateSerializer(serializers.Serializer):
         except:
             raise serializers.ValidationError(f"Option {option} is not available")
 
-        if Cart.objects.filter(option=option_instance.id, user=user).exists():
+        if cart_exists(option=option_instance.id, user=user):
             raise serializers.ValidationError(f"Option {option} is already in cart")
 
         return data
