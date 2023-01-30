@@ -4,7 +4,7 @@ from django.urls import path
 
 
 from store.views.order import OrderView, OrderDetailView
-from store.views.product import ProductDetailView
+from store.views.product import ProductDetailView, ProductListview
 from store.views.cart import CartView
 
 
@@ -14,5 +14,6 @@ urlpatterns = [
     path("orders/", OrderView.as_view(), name="order-create"),
     path("orders/<int:pk>/", OrderDetailView.as_view(), name="order-detail"),
     path("products/<int:pk>/", ProductDetailView.as_view(), name="product-detail"),
+    path("products/", ProductListview.as_view(), name="product-list"),
     path("carts/", CartView.as_view(), name="cart"),
 ]
