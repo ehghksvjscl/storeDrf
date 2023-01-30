@@ -6,8 +6,9 @@ from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
-    PermissionsMixin
+    PermissionsMixin,
 )
+
 
 class UserManaager(BaseUserManager):
     """Manager for user"""
@@ -16,7 +17,7 @@ class UserManaager(BaseUserManager):
         """Create new user"""
 
         if not email:
-            raise ValueError('User must have an email address')
+            raise ValueError("User must have an email address")
 
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
@@ -25,7 +26,7 @@ class UserManaager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password):
-        """ Create super user"""
+        """Create super user"""
         user = self.create_user(email, password)
         user.is_staff = True
         user.is_superuser = True
@@ -33,8 +34,10 @@ class UserManaager(BaseUserManager):
 
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     """User models"""
+
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)

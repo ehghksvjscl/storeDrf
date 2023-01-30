@@ -6,48 +6,58 @@ from store.models import Order, Purchase, Option
 
 # TODO Refactor(Class 형태로 만들기)
 
+
 def get_option(product, name):
     """Get option"""
-    return Option.objects.filter(product=product,name=name) \
-        .select_related('product').first()
+    return (
+        Option.objects.filter(product=product, name=name)
+        .select_related("product")
+        .first()
+    )
+
 
 def _total_option_price(option, quantity):
     """Total price"""
     return (option.product.price + option.price) * quantity
 
+
 def _shipping_fee(price, basePrice=3000):
     """Shipping fee"""
     if price >= 20000:
         return 0
-    
+
     return basePrice
+
 
 def create_purchase(user, option_parms, order, option):
     """Create purchase"""
-    total_price = _total_option_price(option, option_parms['quantity'])
+    total_price = _total_option_price(option, option_parms["quantity"])
 
     result = Purchase.objects.create(
         user=user,
         product=option.product,
         option=option,
         order=order,
-        quantity=option_parms['quantity'],
+        quantity=option_parms["quantity"],
         total_price=total_price,
-        shipping_fee = _shipping_fee(total_price)
+        shipping_fee=_shipping_fee(total_price),
     )
 
     return result
+
 
 def _total_order_price(purchase):
     """Total price"""
     return purchase.total_price
 
+
 def _set_is_sold_out(option, quantity):
     """Set is sold out"""
     if option.stock - quantity <= 0:
         return True
-        
+
     return False
+
 
 def extend_order(order, user, options):
     """Create order"""
@@ -58,12 +68,14 @@ def extend_order(order, user, options):
     # TODO Refactor
 
     for option in options:
-        option_instance = get_option(option['product'], option['name'])
+        option_instance = get_option(option["product"], option["name"])
         purchase = create_purchase(user, option, order, option_instance)
         total_price += _total_order_price(purchase)
-        total_quantity += option['quantity']
-        option_instance.stock -= option['quantity']
-        option_instance.is_sold_out = _set_is_sold_out(option_instance, option['quantity'])
+        total_quantity += option["quantity"]
+        option_instance.stock -= option["quantity"]
+        option_instance.is_sold_out = _set_is_sold_out(
+            option_instance, option["quantity"]
+        )
         option_instance.save()
 
     order.total_price = total_price
@@ -72,4 +84,3 @@ def extend_order(order, user, options):
     order.save()
 
     return order
-

@@ -8,10 +8,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from store.models import Order
-from store.serializers import (
-    OrderSerializer,
-    OrderCreateSerializer
-)
+from store.serializers import OrderSerializer, OrderCreateSerializer
+
 
 class OrderView(APIView):
 
@@ -23,15 +21,18 @@ class OrderView(APIView):
         orders = Order.objects.filter(user=request.user)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
-        
+
     def post(self, request):
         """Create an order"""
-        serializer = OrderCreateSerializer(data=request.data, context={'request': request})
+        serializer = OrderCreateSerializer(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
-            
+
         return Response(serializer.errors, status=400)
+
 
 class OrderDetailView(APIView):
 

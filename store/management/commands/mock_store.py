@@ -1,9 +1,11 @@
 from django.core.management.base import BaseCommand, no_translations
 from store.models import Product, Option
+
+
 class Command(BaseCommand):
 
     help = "This command creates products and options"
-    
+
     @no_translations
     def handle(self, *args, **options):
         Product.objects.all().delete()
@@ -84,4 +86,3 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write(self.style.SUCCESS("Mock data created!"))
-

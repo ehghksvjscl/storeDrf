@@ -3,16 +3,16 @@
 from django.urls import path
 
 
-from store.views.order import OrderView,OrderDetailView
+from store.views.order import OrderView, OrderDetailView
 from store.views.option import ProductView
 from store.views.cart import CartView
 
 
-app_name = 'store'
+app_name = "store"
 
-urlpatterns= [
-    path('orders/', OrderView.as_view(), name='order-create'),
-    path('orders/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
-    path('products/<int:pk>/', ProductView.as_view(), name='product-detail'),
-    path('carts/', CartView.as_view(), name='cart'),
+urlpatterns = [
+    path("orders/", OrderView.as_view(), name="order-create"),
+    path("orders/<int:pk>/", OrderDetailView.as_view(), name="order-detail"),
+    path("products/<int:pk>/", ProductView.as_view(), name="product-detail"),
+    path("carts/", CartView.as_view(), name="cart"),
 ]
