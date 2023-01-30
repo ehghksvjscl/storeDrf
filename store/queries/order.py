@@ -2,8 +2,22 @@
 Query for order
 """
 
+from django.shortcuts import get_object_or_404
+
+from store.models import Order
+
 from .option import get_option, set_is_sold_out
 from .purchase import create_purchase, total_order_price
+
+
+def get_order(**kwargs):
+    """Get order"""
+    return Order.objects.filter(**kwargs).first()
+
+
+def get_order_or_404(**kwargs):
+    """Get order or 404"""
+    return get_object_or_404(Order, **kwargs)
 
 
 def extend_order(order, user, options):
