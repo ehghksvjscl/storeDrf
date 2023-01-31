@@ -22,13 +22,17 @@ def create_user(**parms):
 
 
 class CartAPITests(TestCase):
+    """Test Cart API"""
+
     def setUp(self):
+        """Set up test environment"""
         self.client = APIClient()
         self.user = create_user(email="user@example.com", password="userpassword123")
         self.client.force_authenticate(self.user)
 
-    # 장바구니에는 옵션을 설정한 상품을 담을 수 있습니다.
     def test_cart_has_option(self):
+        """장바구니에는 옵션을 설정한 상품을 담을 수 있습니다."""
+
         call_command("mock_store")
         product = Product.objects.get(name="위처3")
         option = Option.objects.get(product=product, name="기본")
@@ -38,8 +42,8 @@ class CartAPITests(TestCase):
         res = self.client.post(CART_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    # 장바구니에서는 다수의 상품을 한 번에 구매(주문서 생성)할 수 있습니다.
     def test_cart_can_create_order(self):
+        """장바구니에서는 다수의 상품을 한 번에 구매(주문서 생성)할 수 있습니다."""
         # given
         call_command("mock_store")
         last_option = Option.objects.all().last()
@@ -75,8 +79,9 @@ class CartAPITests(TestCase):
         res = self.client.post(ORDER_URL, payload, format="json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    # 장바구니에 담긴 상품 옵션 중 재고량이 0인 상품이 포함되어 있다면, 구매가 불가능합니다.
     def test_cart_can_not_create_order_when_option_is_sold_out(self):
+        """장바구니에 담긴 상품 옵션 중 재고량이 0인 상품이 포함되어 있다면, 구매가 불가능합니다."""
+
         call_command("mock_store")
         last_option = Option.objects.all().last()
 
@@ -95,8 +100,8 @@ class CartAPITests(TestCase):
         res = self.client.post(ORDER_URL, payload, format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # 유저는 바로 구매, 장바구니 구매와 상관없이 주문 내역 리스트를 조회할 수 있습니다.
     def test_user_can_search_order_list(self):
+        """유저는 바로 구매, 장바구니 구매와 상관없이 주문 내역 리스트를 조회할 수 있습니다."""
         call_command("mock_store")
 
         res = self.client.get(ORDER_URL)

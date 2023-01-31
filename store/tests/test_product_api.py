@@ -20,12 +20,17 @@ def product_detail_url(product_id):
 
 
 class ProductAPITests(TestCase):
+    """Test Product API"""
+
     def setUp(self):
+        """Set up test environment"""
+
         self.client = APIClient()
         self.factory = RequestFactory()
 
-    # 비회원들은 상품 정보를 조회할 수 있습니다.
     def test_anonymous_user_can_search_order(self):
+        """비회원들은 상품 정보를 조회할 수 있습니다."""
+
         call_command("mock_store")
         product_id = Product.objects.all().first().id
 

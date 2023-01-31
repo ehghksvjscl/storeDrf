@@ -1,7 +1,3 @@
-"""
-Order Serializer
-"""
-
 from rest_framework import serializers
 from store.models import Order, Purchase, Option, Product, Cart
 from store.queries.order import extend_order, get_option, create_order
@@ -12,6 +8,8 @@ class ProductSerializer(serializers.ModelSerializer):
     """Serializer for Product"""
 
     class Meta:
+        """Product Serializer Meta"""
+
         model = Product
         fields = ("id", "name")
 
@@ -20,6 +18,8 @@ class OptionSerializer(serializers.ModelSerializer):
     """Serializer for Option"""
 
     class Meta:
+        """Option Serializer Meta"""
+
         model = Option
         fields = ("id", "name", "price", "stock")
         read_only_fields = ("id", "created_at")
@@ -31,6 +31,8 @@ class OrderOptionSerializer(serializers.ModelSerializer):
     quantity = serializers.IntegerField(required=True)
 
     class Meta:
+        """OrderOption Serializer Meta"""
+
         model = Option
         fields = ("id", "name", "product", "quantity")
         read_only_fields = ("id", "created_at")
@@ -43,6 +45,8 @@ class PurchaseSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
 
     class Meta:
+        """Purchase Serializer Meta"""
+
         model = Purchase
         fields = (
             "id",
@@ -62,6 +66,8 @@ class OrderSerializer(serializers.ModelSerializer):
     purchases = PurchaseSerializer(many=True, read_only=True)
 
     class Meta:
+        """Order Serializer Meta"""
+
         model = Order
         fields = (
             "id",
@@ -83,8 +89,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
     options = serializers.ListField(write_only=True)
 
-    # TODO : Refactor this
-
     def validate(self, data):
         """Validate options"""
 
@@ -103,17 +107,19 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 )
 
             if option.get("quantity") is None:
-                raise serializers.ValidationError(f"Quantity is required")
-            elif option_instance.stock < option.get("quantity"):
-                raise serializers.ValidationError(f"stock is not enough")
-            elif option_instance.stock == 0:
-                raise serializers.ValidationError(f"stock is not enough")
+                raise serializers.ValidationError("Quantity is required")
+
+            if option_instance.stock < option.get("quantity"):
+                raise serializers.ValidationError("stock is not enough")
+
+            if option_instance.stock == 0:
+                raise serializers.ValidationError("stock is not enough")
 
             if option.get("name") is None:
-                raise serializers.ValidationError(f"Name is required")
+                raise serializers.ValidationError("Name is required")
 
             if option.get("product") is None:
-                raise serializers.ValidationError(f"Product is required")
+                raise serializers.ValidationError("Product is required")
 
         return data
 
@@ -127,6 +133,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         return order
 
     class Meta:
+        """OrderCreate Serializer Meta"""
+
         model = Order
         fields = (
             "id",
@@ -152,12 +160,14 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    """Serializer for Cart"""
+    """Serializer for CreateCart"""
 
     option = OptionSerializer(read_only=True)
     product = ProductSerializer(read_only=True)
 
     class Meta:
+        """CreateCart Serializer Meta"""
+
         model = Cart
         fields = ("id", "user", "quantity", "option", "product", "created_at")
         read_only_fields = ("id", "user", "created_at")
@@ -178,14 +188,15 @@ class CartCreateSerializer(serializers.Serializer):
         try:
             option_instance = get_option(id=option)
         except:
-            raise serializers.ValidationError(f"Option {option} is not available")
+            raise serializers.ValidationError(
+                f"Option {option} is not available"
+            ) from None
 
         if cart_exists(option=option_instance.id, user=user):
             raise serializers.ValidationError(f"Option {option} is already in cart")
 
         return data
 
-    # TODO : Refactor (어떻게 하면 좋을까?)
     def create(self, validated_data):
         """Create cart"""
         user = self.context["request"].user

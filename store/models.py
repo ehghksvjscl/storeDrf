@@ -12,7 +12,7 @@ class Product(models.Model):
     price = models.PositiveBigIntegerField(default=0, verbose_name="기본가격")
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Option(models.Model):
@@ -27,11 +27,13 @@ class Option(models.Model):
     is_sold_out = models.BooleanField(default=False, verbose_name="품절여부")
 
     class Meta:
+        """Option Meta class"""
+
         unique_together = ("product", "name")
         index_together = ("product", "name")
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Cart(models.Model):
