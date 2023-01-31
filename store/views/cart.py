@@ -21,7 +21,30 @@ class CartView(APIView):
     queryset = get_all_cart()
 
     def post(self, request):
-        """Add product to cart"""
+        """장바구니에 상품 추가 API
+
+        - request
+        {
+            "option_id": 1,
+            "quantity": 1
+        }
+
+        - response
+        {
+            "id": 1,
+            "user": 1,
+            "option": 1,
+            "quantity": 1,
+            "created_at": "2021-05-01T00:00:00Z"
+        }
+
+        - error
+        {
+            400 : Option {...} is not available
+            400 : Option {...} is already in cart
+        }
+
+        """
         serializer = CartCreateSerializer(
             data=request.data, context={"request": request}
         )

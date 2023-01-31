@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "storedrf"
+version = "0.0.1"
+description = ""
+authors = ["dhkim"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.1.5"
+djangorestframework = "^3.14.0"
+drf-spectacular = "^0.25.1"
+poetry = "^1.3.2"
+black = "^22.12.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
